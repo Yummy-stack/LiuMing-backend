@@ -1,5 +1,8 @@
 spring:
-  application.name:
-    LiuMing-services
+  application:
+    name:
+      LiuMing-services
+  main:
+    banner-mode: off
   profiles:
     active: local
