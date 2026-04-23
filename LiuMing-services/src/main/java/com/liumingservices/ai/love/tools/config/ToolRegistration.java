@@ -1,5 +1,6 @@
-package com.liumingservices.ai.love.tools;
+package com.liumingservices.ai.love.tools.config;
 
+import com.liumingservices.ai.love.tools.FileOperationTool;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.tool.ToolCallback;
 import org.springframework.ai.tool.ToolCallbacks;
