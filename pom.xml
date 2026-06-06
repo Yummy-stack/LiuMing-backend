@@ -42,7 +42,13 @@
 <!--			<artifactId>spring-boot-starter-web</artifactId>-->
 <!--		</dependency>-->
 
-		<dependency>
+                <dependency>
+                    <groupId>com.baomidou</groupId>
+                    <artifactId>mybatis-plus-spring-boot3-starter</artifactId>
+                    <version> 3.5.6</version>
+                </dependency>
+
+        <dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
 <!--			<optional>true</optional>-->
