@@ -20,9 +20,6 @@ public class ExtractMinIO {
 
     private final MinioClient minioClient;
 
-    /**
-     * 从MinIO中提取.doc和.pdf文件内容
-     */
     public List<Document> extractFromMinio(String bucket, String objectName) {
         log.info("开始从MinIO提取文件: {}/{}", bucket, objectName);
         try (InputStream stream = minioClient.getObject(

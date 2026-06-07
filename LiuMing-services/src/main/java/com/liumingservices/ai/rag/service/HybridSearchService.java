@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.document.Document;
 import org.springframework.ai.vectorstore.SearchRequest;
 import org.springframework.ai.vectorstore.VectorStore;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.data.elasticsearch.core.query.Criteria;
@@ -13,6 +14,7 @@ import org.springframework.data.elasticsearch.core.query.CriteriaQuery;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 @Service
@@ -28,16 +30,23 @@ public class HybridSearchService {
      * 混合检索：ES全文检索 + Qdrant向量检索
      * 采用双路召回策略
      */
-    public List<Document> search(String query, int topK) {
-        log.info("开始混合检索: {}", query);
+    public List<Document> search(String queryText, int topK) {
+        log.info("开始混合检索: {}", queryText);
 
         // 1. Qdrant 向量检索 (召回率高，语义理解强)
-        List<Document> vectorDocs = vectorStore.similaritySearch(
-                SearchRequest.query(query).withTopK(topK)
-        );
+        SearchRequest searchRequest = SearchRequest.builder()
+                .query(queryText)
+                .topK(topK)
+                .build();
+        List<Document> vectorDocs = null;
+        try {
+            vectorDocs = vectorStore.similaritySearch(searchRequest);
+        } catch (Exception e) {
+            log.error("查询Qdrant失败");
+        }
 
         // 2. Elasticsearch 全文检索 (准确率高，关键词匹配强)
-        List<Document> fullTextDocs = searchFromEs(query, topK);
+        List<Document> fullTextDocs = searchFromEs(queryText, topK);
 
         // 3. 双路召回结果合并 (RRF 算法或简单去重合并)
         return mergeResults(vectorDocs, fullTextDocs, topK);
@@ -47,7 +56,7 @@ public class HybridSearchService {
         Criteria criteria = new Criteria("content").contains(query);
         CriteriaQuery criteriaQuery = new CriteriaQuery(criteria);
         // 设置分页
-        criteriaQuery.setPageable(org.springframework.data.domain.PageRequest.of(0, topK));
+        criteriaQuery.setPageable(PageRequest.of(0, topK));
         
         SearchHits<EsDocument> searchHits = elasticsearchOperations.search(criteriaQuery, EsDocument.class);
         

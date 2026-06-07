@@ -17,9 +17,6 @@ public class LoadElasticsearch {
 
     private final ElasticsearchOperations elasticsearchOperations;
 
-    /**
-     * 将文档数据加载到 Elasticsearch 中
-     */
     public void load(List<Document> documents) {
         log.info("开始向 Elasticsearch 加载数据，文档数量: {}", documents.size());
         try {
@@ -32,7 +29,7 @@ public class LoadElasticsearch {
                     .collect(Collectors.toList());
             
             elasticsearchOperations.save(esDocuments);
-            log.info("成功加载数据到 Elasticsearch");
+            log.info("成功加载数据到 Elasticsearch：{}条", documents.size());
         } catch (Exception e) {
             log.error("加载数据到 Elasticsearch 失败", e);
         }

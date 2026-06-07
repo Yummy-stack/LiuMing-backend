@@ -1,6 +1,6 @@
 package com.liumingservices.ai.rag.service;
 
-import com.liumingmodel.entity.Equipment;
+import com.liumingservices.ai.entity.Equipment;
 import com.liumingservices.ai.rag.extract.ExtractHTML;
 import com.liumingservices.ai.rag.extract.ExtractMinIO;
 import com.liumingservices.ai.rag.extract.ExtractSchema;
@@ -20,6 +20,7 @@ import java.util.List;
 @Slf4j
 @RequiredArgsConstructor
 public class ETLService {
+
     private final ExtractSchema extractSchema;
 
     private final ExtractMinIO extractMinIO;
@@ -46,7 +47,7 @@ public class ETLService {
         allDocuments.addAll(dbDocs);
 
         // 从MinIO和HTML提取 (根据数据库中的记录)
-        List<Equipment> equipmentList = equipmentMapper.selectList(null);
+        List<Equipment> equipmentList = equipmentMapper.selectAllEquipments();
         for (Equipment equipment : equipmentList) {
             if (equipment.getFilePath() != null && !equipment.getFilePath().isEmpty()) {
                 // 假设存储格式为 "bucket:object"
@@ -61,7 +62,7 @@ public class ETLService {
         }
 
         // 2. T: Transform
-        // 按照段落/Token进行分词
+        // 按照段落/Token进w行分词
         TokenTextSplitter splitter = new TokenTextSplitter(500, 100, 5, 10000, true);
         List<Document> splitDocuments = splitter.apply(allDocuments);
         log.info("数据转换完成，原始文档数: {}, 分片后文档数: {}", allDocuments.size(), splitDocuments.size());

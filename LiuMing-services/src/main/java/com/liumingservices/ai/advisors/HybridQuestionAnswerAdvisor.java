@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
 public class HybridQuestionAnswerAdvisor implements CallAroundAdvisor, StreamAroundAdvisor {
 
     private final HybridSearchService hybridSearchService;
+
     private final String promptTemplate;
 
     public HybridQuestionAnswerAdvisor(HybridSearchService hybridSearchService) {
@@ -50,7 +51,7 @@ public class HybridQuestionAnswerAdvisor implements CallAroundAdvisor, StreamAro
         List<Document> documents = hybridSearchService.search(query, 5);
         
         String context = documents.stream()
-                .map(Content::getText)
+                .map(Document::getText)
                 .collect(Collectors.joining("\n\n"));
 
         Map<String, Object> advisedContext = new HashMap<>(advisedRequest.adviseContext());
@@ -61,8 +62,8 @@ public class HybridQuestionAnswerAdvisor implements CallAroundAdvisor, StreamAro
                 .replace("{question}", query);
 
         return AdvisedRequest.from(advisedRequest)
-                .withUserText(fullPrompt)
-                .withAdviseContext(advisedContext)
+                .userText(fullPrompt)
+                .adviseContext(advisedContext)
                 .build();
     }
 

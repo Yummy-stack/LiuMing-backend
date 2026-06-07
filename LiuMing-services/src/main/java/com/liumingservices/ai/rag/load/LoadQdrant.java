@@ -15,11 +15,14 @@ public class LoadQdrant {
 
     private final VectorStore vectorStore;
 
-    /**
-     * 将向量化后的文本加载到Qdrant中
-     */
     public void load(List<Document> documents) {
         log.info("开始向Qdrant加载数据，文档数量: {}", documents.size());
+
+        if (documents.isEmpty()) {
+            log.error("Qdrant加载数据失败，文档数量为0");
+            return;
+        }
+
         try {
             vectorStore.add(documents);
             log.info("成功加载数据到Qdrant");
