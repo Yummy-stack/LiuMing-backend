@@ -19,12 +19,12 @@ public class ExtractHTML {
             org.jsoup.nodes.Document doc = Jsoup.connect(url).get();
             // 提取正文内容，这里简单提取body文本，实际可根据需求精细化
             String text = doc.body().text();
-            
-           Document springAiDoc = new Document(text);
+
+            Document springAiDoc = new Document(text);
             springAiDoc.getMetadata().put("source", "html");
             springAiDoc.getMetadata().put("url", url);
             springAiDoc.getMetadata().put("title", doc.title());
-            
+
             List<Document> results = new ArrayList<>();
             results.add(springAiDoc);
             return results;

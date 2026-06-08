@@ -14,7 +14,6 @@ import org.springframework.data.elasticsearch.core.query.CriteriaQuery;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
-import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 @Service
@@ -57,9 +56,9 @@ public class HybridSearchService {
         CriteriaQuery criteriaQuery = new CriteriaQuery(criteria);
         // 设置分页
         criteriaQuery.setPageable(PageRequest.of(0, topK));
-        
+
         SearchHits<EsDocument> searchHits = elasticsearchOperations.search(criteriaQuery, EsDocument.class);
-        
+
         return searchHits.getSearchHits().stream()
                 .map(hit -> {
                     EsDocument esDoc = hit.getContent();

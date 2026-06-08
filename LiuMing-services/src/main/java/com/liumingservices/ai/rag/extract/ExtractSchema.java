@@ -1,5 +1,6 @@
 package com.liumingservices.ai.rag.extract;
 
+import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.liumingservices.ai.entity.Equipment;
 import com.liumingservices.ai.rag.mapper.EquipmentMapper;
@@ -9,6 +10,7 @@ import org.springframework.ai.document.Document;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Component
@@ -38,9 +40,14 @@ public class ExtractSchema {
                 equipment.getSize());
 
         Document document = new Document(content);
-        document.getMetadata().put("id", equipment.getId());
-        document.getMetadata().put("source", "mysql");
-        document.getMetadata().put("name", equipment.getName());
+        Map<String, Object> documentMetadata = document.getMetadata();
+
+        String stringId = StrUtil.toString(equipment.getId());
+
+        documentMetadata.put("id", stringId);
+        documentMetadata.put("source", "mysql");
+        documentMetadata.put("name", equipment.getName());
+
         return document;
     }
 }

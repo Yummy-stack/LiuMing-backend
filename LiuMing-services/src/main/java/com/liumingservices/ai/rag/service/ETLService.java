@@ -47,19 +47,19 @@ public class ETLService {
         allDocuments.addAll(dbDocs);
 
         // 从MinIO和HTML提取 (根据数据库中的记录)
-        List<Equipment> equipmentList = equipmentMapper.selectAllEquipments();
-        for (Equipment equipment : equipmentList) {
-            if (equipment.getFilePath() != null && !equipment.getFilePath().isEmpty()) {
-                // 假设存储格式为 "bucket:object"
-                String[] parts = equipment.getFilePath().split(":");
-                if (parts.length == 2) {
-                    allDocuments.addAll(extractMinIO.extractFromMinio(parts[0], parts[1]));
-                }
-            }
-            if (equipment.getSourceUrl() != null && !equipment.getSourceUrl().isEmpty()) {
-                allDocuments.addAll(extractHTML.extractFromUrl(equipment.getSourceUrl()));
-            }
-        }
+//        List<Equipment> equipmentList = equipmentMapper.selectAllEquipments();
+//        for (Equipment equipment : equipmentList) {
+//            if (equipment.getFilePath() != null && !equipment.getFilePath().isEmpty()) {
+//                // 假设存储格式为 "bucket:object"
+//                String[] parts = equipment.getFilePath().split(":");
+//                if (parts.length == 2) {
+//                    allDocuments.addAll(extractMinIO.extractFromMinio(parts[0], parts[1]));
+//                }
+//            }
+//            if (equipment.getSourceUrl() != null && !equipment.getSourceUrl().isEmpty()) {
+//                allDocuments.addAll(extractHTML.extractFromUrl(equipment.getSourceUrl()));
+//            }
+//        }
 
         // 2. T: Transform
         // 按照段落/Token进w行分词

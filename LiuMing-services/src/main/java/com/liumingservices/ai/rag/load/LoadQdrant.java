@@ -1,5 +1,6 @@
 package com.liumingservices.ai.rag.load;
 
+import com.google.common.collect.Lists;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.document.Document;
@@ -24,7 +25,12 @@ public class LoadQdrant {
         }
 
         try {
-            vectorStore.add(documents);
+            List<List<Document>> partitionDocs = Lists.partition(documents, 25);
+
+            for (List<Document> partitionDoc : partitionDocs) {
+                vectorStore.add(partitionDoc);
+            }
+
             log.info("成功加载数据到Qdrant");
         } catch (Exception e) {
             log.error("加载数据到Qdrant失败", e);

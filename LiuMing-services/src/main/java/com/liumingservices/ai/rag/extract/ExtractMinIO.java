@@ -27,17 +27,17 @@ public class ExtractMinIO {
                         .bucket(bucket)
                         .object(objectName)
                         .build())) {
-            
+
             TikaDocumentReader reader = new TikaDocumentReader(new InputStreamResource(stream));
             List<Document> documents = reader.get();
-            
+
             // 为每个文档添加元数据
             documents.forEach(doc -> {
                 doc.getMetadata().put("source", "minio");
                 doc.getMetadata().put("bucket", bucket);
                 doc.getMetadata().put("object", objectName);
             });
-            
+
             return documents;
         } catch (Exception e) {
             log.error("从MinIO提取文件失败: {}", objectName, e);
