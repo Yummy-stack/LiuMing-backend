@@ -20,6 +20,7 @@ public class LoadElasticsearch {
     public void load(List<Document> documents) {
         log.info("开始向 Elasticsearch 加载数据，文档数量: {}", documents.size());
         try {
+            
             List<EsDocument> esDocuments = documents.stream()
                     .map(doc -> EsDocument.builder()
                             .id(doc.getId())
@@ -27,7 +28,7 @@ public class LoadElasticsearch {
                             .metadata(doc.getMetadata())
                             .build())
                     .collect(Collectors.toList());
-            
+
             elasticsearchOperations.save(esDocuments);
             log.info("成功加载数据到 Elasticsearch：{}条", documents.size());
         } catch (Exception e) {
