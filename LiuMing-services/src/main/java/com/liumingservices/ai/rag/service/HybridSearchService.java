@@ -37,7 +37,7 @@ public class HybridSearchService {
                 .query(queryText)
                 .topK(topK)
                 .build();
-        List<Document> vectorDocs = null;
+        List<Document> vectorDocs = new ArrayList<>();
         try {
             vectorDocs = vectorStore.similaritySearch(searchRequest);
         } catch (Exception e) {

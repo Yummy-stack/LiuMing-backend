@@ -35,8 +35,6 @@ import static org.springframework.ai.chat.client.advisor.AbstractChatMemoryAdvis
 public class LoveAiChat {
     private final ChatModel dashscopeChatModel;
 
-//    private final VectorStore loveVectorStore;
-
     private final Advisor loveCloudAdvisor;
 
     private final Advisor hybridRAGAdvisor;
@@ -45,7 +43,9 @@ public class LoveAiChat {
 
     private final VectorStore vectorStore;
 
-    public LoveAiChat(DashScopeChatModel dashscopeChatModel, Advisor loveCloudAdvisor, Advisor hybridRAGAdvisor, VectorStore vectorStore) {
+    public LoveAiChat(DashScopeChatModel dashscopeChatModel, Advisor loveCloudAdvisor,
+                      Advisor hybridRAGAdvisor, VectorStore vectorStore
+    ) {
         this.dashscopeChatModel = dashscopeChatModel;
         this.loveCloudAdvisor = loveCloudAdvisor;
         this.hybridRAGAdvisor = hybridRAGAdvisor;
