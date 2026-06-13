@@ -7,6 +7,7 @@ import org.springframework.ai.document.Document;
 import org.springframework.ai.vectorstore.SearchRequest;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.data.elasticsearch.core.query.Criteria;
@@ -31,8 +32,8 @@ public class HybridSearchService {
      */
     public List<Document> search(String queryText, int topK) {
         log.info("开始混合检索: {}", queryText);
-
         // 1. Qdrant 向量检索 (召回率高，语义理解强)
+        log.info("开始去Qdrant中做相似度检索：{},{}", queryText, topK);
         SearchRequest searchRequest = SearchRequest.builder()
                 .query(queryText)
                 .topK(topK)
@@ -52,22 +53,52 @@ public class HybridSearchService {
     }
 
     private List<Document> searchFromEs(String query, int topK) {
-        Criteria criteria = new Criteria("content").contains(query);
-        CriteriaQuery criteriaQuery = new CriteriaQuery(criteria);
-        // 设置分页
-        criteriaQuery.setPageable(PageRequest.of(0, topK));
+        log.info("开始去ES中做关键词检索：{},{}", query, topK);
+//        Criteria criteria = new Criteria("content").contains(query);
+//        CriteriaQuery criteriaQuery = new CriteriaQuery(criteria);
+//        // 设置分页
+//        criteriaQuery.setPageable(PageRequest.of(0, topK));
+//
+//        SearchHits<EsDocument> searchHits = elasticsearchOperations.search(criteriaQuery, EsDocument.class);
+//
+//        return searchHits.getSearchHits().stream()
+//                .map(hit -> {
+//                    EsDocument esDoc = hit.getContent();
+//                    Document doc = new Document(esDoc.getContent(), esDoc.getMetadata());
+//                    // 记录 ES 的分值，以便后续可能的重排序
+//                    doc.getMetadata().put("es_score", hit.getScore());
+//                    return doc;
+//                })
+//                .collect(Collectors.toList());
 
-        SearchHits<EsDocument> searchHits = elasticsearchOperations.search(criteriaQuery, EsDocument.class);
+        Criteria criteria = new Criteria("content").matches(query);
+        CriteriaQuery criteriaQuery = new CriteriaQuery(criteria);
+
+        criteriaQuery.setPageable(
+                PageRequest.of(0, topK, Sort.by(Sort.Direction.DESC, "_score"))
+        );
+
+        SearchHits<EsDocument> searchHits;
+        try {
+            searchHits = elasticsearchOperations.search(criteriaQuery, EsDocument.class);
+        } catch (Exception e) {
+            log.error("ES_KEYWORD_SEARCH_ERROR, query={}", query, e);
+            return Collections.emptyList();
+        }
+
+        log.info("ES_KEYWORD_SEARCH_DONE, query={}, totalHits={}",
+                query, searchHits.getTotalHits());
 
         return searchHits.getSearchHits().stream()
                 .map(hit -> {
                     EsDocument esDoc = hit.getContent();
                     Document doc = new Document(esDoc.getContent(), esDoc.getMetadata());
-                    // 记录 ES 的分值，以便后续可能的重排序
                     doc.getMetadata().put("es_score", hit.getScore());
                     return doc;
                 })
                 .collect(Collectors.toList());
+
+
     }
 
     /**

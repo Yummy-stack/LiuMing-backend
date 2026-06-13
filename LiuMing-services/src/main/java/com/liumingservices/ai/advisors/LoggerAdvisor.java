@@ -21,7 +21,7 @@ public class LoggerAdvisor implements CallAroundAdvisor, StreamAroundAdvisor {
         log.info("调用了AI：{}", advisedRequest.userText());
 
         AdvisedResponse loggerAdvisorResponse = chain.nextAroundCall(advisedRequest);
-
+        
         String text = Optional.of(loggerAdvisorResponse)
                 .map(AdvisedResponse::response)
                 .map(ChatResponse::getResult)
