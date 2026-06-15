@@ -46,10 +46,10 @@ public class HybridQuestionAnswerAdvisor implements CallAroundAdvisor, StreamAro
     private AdvisedRequest before(AdvisedRequest advisedRequest) {
         String query = advisedRequest.userText();
         log.info("HybridAdvisor 开始处理查询: {}", query);
-        
+
         // 执行混合检索
         List<Document> documents = hybridSearchService.search(query, 5);
-        
+
         String context = documents.stream()
                 .map(Document::getText)
                 .collect(Collectors.joining("\n\n"));
@@ -74,6 +74,7 @@ public class HybridQuestionAnswerAdvisor implements CallAroundAdvisor, StreamAro
 
     @Override
     public String getName() {
-        return "";
+        String name = "HybridQuestionAnswerAdvisor";
+        return name;
     }
 }

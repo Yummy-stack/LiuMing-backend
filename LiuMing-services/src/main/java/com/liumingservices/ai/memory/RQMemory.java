@@ -32,6 +32,7 @@ public class RQMemory implements ChatMemory {
 
     @Override
     public void add(String conversationId, List<Message> messages) {
+        log.info("=== 会话记忆开始填充上文信息 ===");
         if (messages == null || messages.isEmpty()) {
             return;
         }
@@ -66,6 +67,7 @@ public class RQMemory implements ChatMemory {
 
     @Override
     public List<Message> get(String conversationId, int lastN) {
+        log.info("=== 会话记忆开始获取上文信息 ===");
         String key = REDIS_KEY_PREFIX + conversationId;
         log.info("Retrieving memory for conversation: {}, lastN: {}", conversationId, lastN);
 
