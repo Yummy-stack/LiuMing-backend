@@ -5,5 +5,5 @@ public interface MemoryConstants {
 
     long MEMORY_EXPIRATION_DAYS = 30;
 
-    Integer MEMORY_TOKEN = 4000;
+    Integer MEMORY_BUDGET_TOKEN = 4000;
 }

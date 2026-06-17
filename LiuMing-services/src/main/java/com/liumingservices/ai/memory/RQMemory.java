@@ -1,10 +1,12 @@
 package com.liumingservices.ai.memory;
 
+import com.liumingservices.ai.manager.TokenContextManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.ai.chat.messages.*;
 import org.springframework.ai.document.Document;
+import org.springframework.ai.model.Content;
 import org.springframework.ai.tokenizer.TokenCountEstimator;
 import org.springframework.ai.vectorstore.SearchRequest;
 import org.springframework.ai.vectorstore.VectorStore;
@@ -17,8 +19,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import static com.liumingcommon.constants.ai.memory.MemoryConstants.MEMORY_EXPIRATION_DAYS;
-import static com.liumingcommon.constants.ai.memory.MemoryConstants.REDIS_KEY_PREFIX;
+import static com.liumingcommon.constants.ai.memory.MemoryConstants.*;
 
 @Component
 @Slf4j
@@ -29,7 +30,7 @@ public class RQMemory implements ChatMemory {
 
     private final VectorStore vectorStore;
 
-    private final TokenCountEstimator tokenEstimator;
+    private final TokenContextManager tokenContextManager;
 
     private final ThreadPoolTaskExecutor memoryThreadPool;
 
@@ -78,25 +79,27 @@ public class RQMemory implements ChatMemory {
         String key = REDIS_KEY_PREFIX + conversationId;
         List<Object> redisResult = redisTemplate.opsForList().range(key, -lastN, -1);
         if (redisResult == null) {
-
             return new ArrayList<Message>();
         }
 
-        List<String> redisMessages = redisResult.stream().map(Object::toString).toList();
-        List<Message> result = new ArrayList<>();
-        for (String json : redisMessages) {
+        List<String> redisTexts = redisResult.stream().map(Object::toString).toList();
+        List<Message> redisMessages = new ArrayList<>();
+        for (String json : redisTexts) {
             if (json.contains("\"USER\"")) {
                 String content = extractContent(json);
-                result.add(new UserMessage(content));
+                redisMessages.add(new UserMessage(content));
             } else if (json.contains("\"ASSISTANT\"")) {
                 String content = extractContent(json);
-                result.add(new AssistantMessage(content));
+                redisMessages.add(new AssistantMessage(content));
             }
         }
 
-        List<Message> finalContext = new ArrayList<>(result);
+        Set<String> redisMessageSet = redisMessages.stream()
+                .map(Content::getText)
+                .collect(Collectors.toSet());
 
-//        if (result.size() < lastN) {
+        List<Message> finalContext = new ArrayList<>(redisMessages);
+
         SearchRequest memorySearchRequest = SearchRequest.builder()
                 .query(conversationId)
                 .topK(lastN)
@@ -105,16 +108,20 @@ public class RQMemory implements ChatMemory {
         List<Document> semanticDocs = vectorStore.similaritySearch(memorySearchRequest);
 
         List<Message> semanticMessages = toMessages(semanticDocs);
-        for (Message msg : semanticMessages) {
-            boolean exists = finalContext.stream()
-                    .anyMatch(m -> m.getText().equals(msg.getText()));
-            if (!exists) {
-                finalContext.add(msg);
+        for (Message qdrantMessage : semanticMessages) {
+            if (qdrantMessage == null) {
+                throw new RuntimeException("消息为空");
+            }
+            String qdrantMessageText = qdrantMessage.getText();
+            if (!redisMessageSet.contains(qdrantMessage)) {
+                finalContext.add(0, qdrantMessage);
+                redisMessageSet.add(qdrantMessageText);
             }
         }
-//        }
 
-        return finalContext;
+        List<Message> croppedByTokenMessages = tokenContextManager.cropByToken(finalContext, MEMORY_BUDGET_TOKEN);
+
+        return croppedByTokenMessages;
     }
 
     @Override
