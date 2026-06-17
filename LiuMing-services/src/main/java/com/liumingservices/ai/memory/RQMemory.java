@@ -36,7 +36,7 @@ public class RQMemory implements ChatMemory {
 
     @Override
     public void add(String conversationId, List<Message> messages) {
-        log.info("会话记忆开始存储上文信息：{}", conversationId);
+        log.info("会话记忆机制触发，开始存储上文信息：{}", conversationId);
 
         if (messages == null || messages.isEmpty()) {
             return;
@@ -74,7 +74,7 @@ public class RQMemory implements ChatMemory {
 
     @Override
     public List<Message> get(String conversationId, int lastN) {
-        log.info("会话记忆开始存储上文信息 conversation: {}, lastN: {}", conversationId, lastN);
+        log.info("会话记忆机制触发，开始获取上文信息 conversation: {}, lastN: {}", conversationId, lastN);
 
         String key = REDIS_KEY_PREFIX + conversationId;
         List<Object> redisResult = redisTemplate.opsForList().range(key, -lastN, -1);
@@ -114,7 +114,19 @@ public class RQMemory implements ChatMemory {
             }
             String qdrantMessageText = qdrantMessage.getText();
             if (!redisMessageSet.contains(qdrantMessage)) {
-                finalContext.add(0, qdrantMessage);
+                String historyQdrantMessage = String.format("[历史相关记忆]：{}", qdrantMessageText);
+                if (MessageType.USER.equals(qdrantMessage.getMessageType())) {
+                    UserMessage userMessage = new UserMessage(historyQdrantMessage);
+                    finalContext.add(0, userMessage);
+                }
+                if (MessageType.ASSISTANT.equals(qdrantMessage.getMessageType())) {
+                    AssistantMessage assistantMessage = new AssistantMessage(historyQdrantMessage);
+                    finalContext.add(0, assistantMessage);
+                }
+                if (MessageType.SYSTEM.equals(qdrantMessage.getMessageType())) {
+                    SystemMessage systemMessage = new SystemMessage(historyQdrantMessage);
+                    finalContext.add(0, systemMessage);
+                }
                 redisMessageSet.add(qdrantMessageText);
             }
         }
@@ -171,7 +183,8 @@ public class RQMemory implements ChatMemory {
         if (document == null) {
             throw new RuntimeException("参数错误");
         }
-        String role = document.getMetadata().get("role").toString();
+        Map<String, Object> documentMetadata = document.getMetadata();
+        String role = documentMetadata.get("role").toString();
         String content = document.getText();
 
         Message message = switch (role) {

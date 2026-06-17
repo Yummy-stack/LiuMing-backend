@@ -18,6 +18,7 @@ public class TokenContextManager {
     private final TokenCountEstimator tokenCountEstimator;
 
     public List<Message> cropByToken(List<Message> cropMessages, Integer tokenBudget) {
+        log.info("开始按照tokenBudget裁剪：{}", tokenBudget);
         if (cropMessages == null || tokenBudget == 0) {
             throw new RuntimeException("请输入要裁剪的列表，和最大Token数");
         }
