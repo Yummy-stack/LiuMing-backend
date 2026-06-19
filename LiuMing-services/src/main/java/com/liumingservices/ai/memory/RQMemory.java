@@ -114,7 +114,7 @@ public class RQMemory implements ChatMemory {
             }
             String qdrantMessageText = qdrantMessage.getText();
             if (!redisMessageSet.contains(qdrantMessage)) {
-                String historyQdrantMessage = String.format("[历史相关记忆]：{}", qdrantMessageText);
+                String historyQdrantMessage = String.format("[历史相关记忆][{}]：{}", qdrantMessage.getMessageType(), qdrantMessageText);
                 if (MessageType.USER.equals(qdrantMessage.getMessageType())) {
                     UserMessage userMessage = new UserMessage(historyQdrantMessage);
                     finalContext.add(0, userMessage);

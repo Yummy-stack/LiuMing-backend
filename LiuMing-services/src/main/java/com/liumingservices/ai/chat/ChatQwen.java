@@ -9,7 +9,7 @@ import com.liumingservices.ai.advisors.HybridQuestionAnswerAdvisor;
 import com.liumingservices.ai.advisors.LoggerAdvisor;
 import com.liumingservices.ai.advisors.ReReadingAdvisor;
 import com.liumingservices.ai.memory.RQMemory;
-import com.liumingservices.ai.rag.service.HybridSearchService;
+import com.liumingservices.ai.rag.service.ai.HybridSearchService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
@@ -58,11 +58,10 @@ public class ChatQwen {
 
     public String CallChat(CallQwenDto callQwenDto) {
         // TODO 暂时写死ConversationId
-        callQwenDto.setConversationId("testConversationId");
         if (callQwenDto == null || StrUtil.isBlank(callQwenDto.getUserMessage()) || StrUtil.isBlank(callQwenDto.getConversationId())) {
             throw new RuntimeException("参数为空");
         }
-
+        callQwenDto.setConversationId("testConversationId");
         String userMessage = callQwenDto.getUserMessage();
         String conversationId = callQwenDto.getConversationId();
 
@@ -86,10 +85,10 @@ public class ChatQwen {
 
     public Flux<String> StreamChat(StreamQwenDto streamQwenDto) {
         // TODO 暂时写死ConversationId
-        streamQwenDto.setConversationId("testConversationId");
         if (streamQwenDto == null || StrUtil.isBlank(streamQwenDto.getUserMessage()) || StrUtil.isBlank(streamQwenDto.getConversationId())) {
             return Flux.error(new RuntimeException("参数为空"));
         }
+        streamQwenDto.setConversationId("testConversationId");
 
         String userMessage = streamQwenDto.getUserMessage();
         String conversationId = streamQwenDto.getConversationId();

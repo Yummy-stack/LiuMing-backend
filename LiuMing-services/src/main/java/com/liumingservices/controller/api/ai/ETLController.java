@@ -2,7 +2,7 @@ package com.liumingservices.controller.api.ai;
 
 import com.liumingcommon.BaseResponse;
 import com.liumingcommon.utils.ResultUtils;
-import com.liumingservices.ai.rag.service.ETLService;
+import com.liumingservices.ai.rag.service.ai.ETLService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
