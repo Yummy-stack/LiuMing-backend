@@ -1,4 +1,4 @@
-package com.liumingservices.ai.config;
+package com.liumingservices.config.thread;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
@@ -23,6 +23,20 @@ public class ThreadPoolConfig {
         memoryThreadPool.initialize();
 
         return memoryThreadPool;
+    }
+
+    @Bean(name = "syncEquVectorPool")
+    public ThreadPoolTaskExecutor threadPoolTaskExecutor() {
+        ThreadPoolTaskExecutor syncEquVectorPool = new ThreadPoolTaskExecutor();
+        syncEquVectorPool.setCorePoolSize(10);
+        syncEquVectorPool.setMaxPoolSize(10);
+        syncEquVectorPool.setKeepAliveSeconds(60);
+        syncEquVectorPool.setQueueCapacity(10);
+        syncEquVectorPool.setRejectedExecutionHandler(new ThreadPoolExecutor.DiscardPolicy());
+        syncEquVectorPool.setThreadNamePrefix("syncEquVectorPool");
+        syncEquVectorPool.initialize();
+
+        return syncEquVectorPool;
     }
 
 }

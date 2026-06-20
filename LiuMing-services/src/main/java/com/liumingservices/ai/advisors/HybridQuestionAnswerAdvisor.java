@@ -1,10 +1,9 @@
 package com.liumingservices.ai.advisors;
 
-import com.liumingservices.ai.rag.service.HybridSearchService;
+import com.liumingservices.ai.rag.service.ai.HybridSearchService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.advisor.api.*;
 import org.springframework.ai.document.Document;
-import org.springframework.ai.model.Content;
 import reactor.core.publisher.Flux;
 
 import java.util.HashMap;

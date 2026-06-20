@@ -1,4 +1,4 @@
-package com.liumingservices.ai.rag.service;
+package com.liumingservices.ai.rag.service.ai;
 
 import com.liumingservices.ai.rag.document.es.EsDocument;
 import lombok.RequiredArgsConstructor;

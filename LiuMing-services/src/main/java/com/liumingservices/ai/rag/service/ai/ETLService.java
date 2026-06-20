@@ -1,12 +1,11 @@
-package com.liumingservices.ai.rag.service;
+package com.liumingservices.ai.rag.service.ai;
 
-import com.liumingservices.ai.entity.Equipment;
 import com.liumingservices.ai.rag.extract.ExtractHTML;
 import com.liumingservices.ai.rag.extract.ExtractMinIO;
 import com.liumingservices.ai.rag.extract.ExtractSchema;
 import com.liumingservices.ai.rag.load.LoadElasticsearch;
 import com.liumingservices.ai.rag.load.LoadQdrant;
-import com.liumingservices.ai.rag.mapper.EquipmentMapper;
+import com.liumingservices.mapper.EquipmentMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.document.Document;

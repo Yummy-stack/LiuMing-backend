@@ -1,4 +1,4 @@
-package com.liumingservices.ai.config;
+package com.liumingservices.config.ai;
 
 import com.alibaba.cloud.ai.dashscope.api.DashScopeApi;
 import com.alibaba.cloud.ai.dashscope.rag.DashScopeDocumentRetriever;

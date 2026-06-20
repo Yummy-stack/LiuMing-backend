@@ -1,5 +1,6 @@
 package com.liumingservices.ai.rag.extract;
 
+import cn.hutool.core.lang.hash.Hash;
 import io.minio.GetObjectArgs;
 import io.minio.MinioClient;
 import lombok.RequiredArgsConstructor;
@@ -11,7 +12,9 @@ import org.springframework.stereotype.Component;
 
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Component
 @Slf4j
@@ -22,6 +25,7 @@ public class ExtractMinIO {
 
     public List<Document> extractFromMinio(String bucket, String objectName) {
         log.info("开始从MinIO提取文件: {}/{}", bucket, objectName);
+
         try (InputStream stream = minioClient.getObject(
                 GetObjectArgs.builder()
                         .bucket(bucket)
@@ -31,12 +35,18 @@ public class ExtractMinIO {
             TikaDocumentReader reader = new TikaDocumentReader(new InputStreamResource(stream));
             List<Document> documents = reader.get();
 
-            // 为每个文档添加元数据
-            documents.forEach(doc -> {
-                doc.getMetadata().put("source", "minio");
-                doc.getMetadata().put("bucket", bucket);
-                doc.getMetadata().put("object", objectName);
-            });
+            HashMap<String, Object> metadataMap = new HashMap<>();
+
+            metadataMap.put("relatedEntityId", "23");
+            metadataMap.put("bucket", bucket);
+            metadataMap.put("objectName", objectName);
+
+            for (Document document : documents) {
+                if (document != null) {
+                    Map<String, Object> documentMetadata = document.getMetadata();
+                    documentMetadata.putAll(metadataMap);
+                }
+            }
 
             return documents;
         } catch (Exception e) {

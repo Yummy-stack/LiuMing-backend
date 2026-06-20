@@ -1,4 +1,4 @@
-package com.liumingservices.ai.config;
+package com.liumingservices.config;
 
 import com.github.xiaoymin.knife4j.spring.configuration.Knife4jProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;

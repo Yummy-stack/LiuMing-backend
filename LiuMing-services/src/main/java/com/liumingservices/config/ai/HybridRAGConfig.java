@@ -1,7 +1,7 @@
-package com.liumingservices.ai.config;
+package com.liumingservices.config.ai;
 
 import com.liumingservices.ai.advisors.HybridQuestionAnswerAdvisor;
-import com.liumingservices.ai.rag.service.HybridSearchService;
+import com.liumingservices.ai.rag.service.ai.HybridSearchService;
 import org.springframework.ai.chat.client.advisor.api.Advisor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

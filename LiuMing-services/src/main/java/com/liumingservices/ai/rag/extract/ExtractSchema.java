@@ -1,9 +1,8 @@
 package com.liumingservices.ai.rag.extract;
 
 import cn.hutool.core.util.StrUtil;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.liumingservices.ai.entity.Equipment;
-import com.liumingservices.ai.rag.mapper.EquipmentMapper;
+import com.liumingservices.entity.Equipment;
+import com.liumingservices.mapper.EquipmentMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.document.Document;

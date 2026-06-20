@@ -1,4 +1,4 @@
-package com.liumingservices.ai.config;
+package com.liumingservices.config.redis;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;

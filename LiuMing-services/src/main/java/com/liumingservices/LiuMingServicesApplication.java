@@ -5,9 +5,11 @@ import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.scheduling.annotation.EnableAsync;
 
-@ComponentScan(basePackages = { "com" })
-@MapperScan("com.liumingservices.ai.rag.mapper")
+@EnableAsync
+@ComponentScan(basePackages = {"com"})
+@MapperScan("com.liumingservices.mapper")
 @SpringBootApplication(exclude = {
         Knife4jAutoConfiguration.class
 })
