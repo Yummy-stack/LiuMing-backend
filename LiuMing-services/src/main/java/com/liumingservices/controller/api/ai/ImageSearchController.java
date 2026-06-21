@@ -5,6 +5,7 @@ import com.liumingcommon.utils.ResultUtils;
 import com.liumingmodel.vo.imagesearch.ImageVectorPayloadVo;
 import com.liumingservices.image.ImageIndexService;
 import com.liumingservices.image.ImageSearchService;
+import com.liumingservices.job.result.SyncResult;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -23,7 +24,7 @@ import java.util.Map;
 
 @Api(value = "以图搜图")
 @RestController
-@RequestMapping("/image-search")
+@RequestMapping(value = "/image-search")
 @Slf4j
 @RequiredArgsConstructor
 public class ImageSearchController {
@@ -50,16 +51,19 @@ public class ImageSearchController {
         }
     }
 
-    // TODO 存在问题待修改
     @ApiOperation(value = "手动全量同步图像向量")
     @PostMapping(value = "/sync")
     public BaseResponse<?> syncAllImages() {
         try {
-            int successCount = imageIndexService.syncAllEquipments();
-            Map<String, Object> result = new HashMap<>();
-            result.put("successCount", successCount);
-            result.put("message", "图像向量全量同步完成");
-            return ResultUtils.success(result);
+            SyncResult syncResult = imageIndexService.syncAllEquipments();
+
+            Map<String, Object> syncResponseMap = new HashMap<>();
+            syncResponseMap.put("syncResult", syncResult.getResult());
+            syncResponseMap.put("successCount", syncResult.getSuccessCount());
+            syncResponseMap.put("failedCount", syncResult.getFailedCount());
+            syncResponseMap.put("message", "图像向量全量同步完成");
+
+            return ResultUtils.success(syncResponseMap);
         } catch (Exception e) {
             log.error("图像向量全量同步失败", e);
             return ResultUtils.error(500, "图像向量全量同步失败: " + e.getMessage());
